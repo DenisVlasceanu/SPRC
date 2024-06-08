@@ -1,0 +1,6 @@
+.dockerignore
+Dockerfile
+migrations
+README
+scripts
+Tema2_script_testare_ordered_correct_port.json

@@ -1,0 +1,43 @@
+Implementare:
+    REST API:                                app.py     -> port 5000
+    Baza de date:                            PostgreSQL -> port 5432
+    Utilitar de gestiune al bazelor de date: Adminer    -> port 8080
+
+
+***** ATENTIE *****
+    Pentru rularea scripturilor din folderul "scripts", este necesar un sistem Linux / WSL / un echivalent WSL pentru
+     MacOS.
+    Daca nu se doreste rularea scripturilor, pot fi rulate comenzile din ele, in ordinea specificata mai jos in
+     sectiunea "Comenzi" (pentru asta este necesara instalarea docker + docker-compose sau Docker Desktop).
+
+	Cat timp configuratia este pornita (dupa rularea first.sh sau on.sh, inaintea rularii off.sh), NU modificati niciun
+	 alt fisier/folder cu exceptia app.py! Asta include folderul "migrations" care, desi va fi gol, NU va trebui sters
+	 cat timp se doreste crearea de migrari noi!
+
+
+Comenzi:
+    *** Inaintea rularii comenzilor, se recomanda deschiderea a 2 terminale in paralel, ambele avand "working directory"
+        in folderul "scripts" ***
+
+    Doar dacă se rulează configurația pentru prima oară:
+        [Terminal 1] chmod +x first.sh
+        [Terminal 1] ./first.sh
+        [Terminal 2] ./first-mig.sh
+        * modificari in app.py *
+        [Terminal 2] ./off.sh
+
+    Altfel:
+        [Terminal 1] ./on.sh
+        * daca se fac modificari legate de structura bazelor de date in app.py *
+            [Terminal 2] ./add-mig.sh "INSERT MIGRATION MESSAGE HERE"
+        * daca se fac orice alte modificari in app.py *
+            nu este nevoie de rularea niciunei comenzi in Terminal 2
+        [Terminal 2] ./off.sh
+
+    Daca se doreste eliminarea tuturor imaginilor si volumelor:
+        ./rm.sh
+
+
+Postman:
+    Scriptul Tema2_script_testare_ordered_correct_port.json trebue doar importat in Postman, dupa care trebuie rulat
+     setul de teste incorporate. De asemenea, portul este deja configurat la cel al serviciului web (5000).
