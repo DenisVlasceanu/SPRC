@@ -1,0 +1,40 @@
+Implementare:
+    Adaptor:                        adapter/adapter.py
+    Broker MQTT:                    eclipse-mosquitto -> port 1883
+    Baza de date:                   InfluxDB -> port 8086
+    Utilitar de vizionare date:     Grafana -> port 80:3000
+
+
+Comenzi:
+    *Inaintea rularii comenzilor, se recomanda deschiderea a 2 terminale in paralel, ambele avand "working directory"
+     in folderul unde se afla toate fisierele*
+
+    Doar dacă se rulează configurația pentru prima oară:
+        * Pentru pornire *
+            [Terminal 1] docker swarm init
+            [Terminal 1] ./run.sh
+        * Pentru oprire *
+            [Terminal 1] docker stack rm sprc3
+
+    Altfel:
+        * Pentru pornire *
+            [Terminal 1] docker stack deploy -c stack.yml sprc3
+        * Pentru accesarea bazei de date (doar daca ruleaza serviciul "sprc3_influxdb")*
+            [Terminal 2] docker exec -it $(docker ps --filter "name=sprc3_influxdb" -q) influx
+            [Terminal 2] SHOW DATABASES;
+            [Terminal 2] USE sprc3DB;
+        * Pentru verificarea datelor din baza de date *
+            [Terminal 2] SHOW MEASUREMENTS;
+            [Terminal 2] SELECT * FROM "<STATIE>.<TAG>";
+        * Pentru popularea bazei de date (aici e cu infinite loop) *
+            [Terminal 1] python3 db-data.py
+        * Pentru stergerea tuturor masuratorilor/datelor din baza de date *
+            [Terminal 2] DROP SERIES FROM /.*/;
+        * Pentru iesirea din baza de date *
+            [Terminal 2] CTRL+D
+        * Pentru oprire *
+            [Terminal 1] docker stack rm sprc3
+
+    Daca se doreste eliminarea tuturor imaginilor si volumelor:
+        * Se asteapta pana la oprirea tuturor containerelor *
+        ./rm.sh

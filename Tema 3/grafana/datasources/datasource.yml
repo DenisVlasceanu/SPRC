@@ -1,0 +1,11 @@
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB
+    type: influxdb
+    access: proxy
+    url: http://sprc3_influxdb:8086
+    database: sprc3DB
+    isDefault: true
+    jsonData:
+      timeInterval: "1s"

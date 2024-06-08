@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto:latest
+    ports:
+      - '1883:1883'
+    volumes:
+      - ./mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - mqtt-adapterNet
+    deploy:
+      replicas: 1
+
+  influxdb:
+    image: influxdb:1.8
+    ports:
+      - '8086:8086'
+    volumes:
+      - influxdbVolume:/var/lib/influxdb
+    networks:
+      - db-adapterNet
+      - db-grafanaNet
+    deploy:
+      replicas: 1
+
+  adapter:
+    image: adapter
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - mqtt-broker
+      - influxdb
+    environment:
+      - MQTT_HOST=sprc3_mqtt-broker
+      - INFLUX_HOST=sprc3_influxdb
+      - DB_NAME=sprc3DB
+      - DEBUG_DATA_FLOW=true
+    networks:
+      - db-adapterNet
+      - mqtt-adapterNet
+    deploy:
+      replicas: 1
+
+  grafana:
+    image: grafana/grafana:latest
+    depends_on:
+      - influxdb
+    ports:
+      - '80:3000'
+    environment:
+      - GF_SECURITY_ADMIN_USER=asistent
+      - GF_SECURITY_ADMIN_PASSWORD=grafanaSPRC2023
+    networks:
+      - db-grafanaNet
+    volumes:
+      - grafanaVolume:/var/lib/grafana
+      - ./grafana/:/etc/grafana/provisioning
+    deploy:
+      replicas: 1
+
+volumes:
+  influxdbVolume:
+  grafanaVolume:
+
+networks:
+  mqtt-adapterNet:
+  db-adapterNet:
+  db-grafanaNet:
